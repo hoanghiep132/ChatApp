@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Circle?>
+
+<AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hiepnh.chatapp.controller.ChatController">
+   <children>
+      <AnchorPane layoutX="231.0" prefHeight="800.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <AnchorPane layoutY="600.0" prefHeight="100.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0">
+               <children>
+                  <TextField fx:id="messageInput" layoutX="26.0" layoutY="14.0" onKeyPressed="#sendMsgByKey" prefHeight="50.0" prefWidth="630.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="25.0" />
+                  <ImageView fx:id="f" fitHeight="70.0" fitWidth="70.0" layoutX="692.0" layoutY="10.0" onMouseReleased="#sendMsg" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="695.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="15.0">
+                     <image>
+                        <Image url="@icons/icons8-sent.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </AnchorPane>
+            <AnchorPane layoutX="14.0" layoutY="7.0" prefHeight="700.0" prefWidth="800.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <AnchorPane layoutX="8.0" layoutY="6.0" prefHeight="100.0" prefWidth="800.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Label fx:id="friendNameLabel" layoutX="118.0" layoutY="14.0" prefHeight="40.0" prefWidth="200.0" text="USER1" />
+                        <Circle fx:id="friendCircleImg" fill="DODGERBLUE" layoutX="54.0" layoutY="54.0" radius="40.0" stroke="BLACK" strokeType="INSIDE" />
+                        <Label fx:id="typingLabel" layoutX="118.0" layoutY="62.0" prefHeight="16.0" prefWidth="70.0" />
+                        <Button layoutX="652.0" layoutY="28.0" mnemonicParsing="false" onAction="#videoCall" prefHeight="40.0" prefWidth="98.0" text="Video Call" />
+                     </children></AnchorPane>
+                  <ListView fx:id="messageList" layoutX="6.0" layoutY="100.0" prefHeight="600.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0" />
+               </children></AnchorPane>
+         </children>
+      </AnchorPane>
+      <Pane maxHeight="150.0" prefHeight="150.0" prefWidth="400.0" style="-fx-background-color: #1E88E5;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="800.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label fx:id="usernameLabel" layoutX="162.0" layoutY="70.0" prefHeight="50.0" prefWidth="200.0" style="-fx-text-fill: #F3F1F5; -fx-font-size: 16;" text="Nguyễn Hoàng Hiệp" />
+            <Circle fx:id="yourCircleImg" fill="DODGERBLUE" layoutX="80.0" layoutY="80.0" radius="70.0" stroke="BLACK" strokeType="INSIDE" />
+            <Button layoutX="262.0" layoutY="10.0" mnemonicParsing="false" onAction="#logout" prefHeight="40.0" prefWidth="127.0" style="-fx-border-radius: 10px;" text="Đăng xuất" />
+         </children>
+      </Pane>
+      <Pane layoutX="6.0" layoutY="100.0" prefHeight="700.0" prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="800.0" AnchorPane.topAnchor="150.0">
+         <children>
+            <ListView fx:id="onlineUserList" onMouseClicked="#chooseCurrentUser" prefHeight="650.0" prefWidth="400.0" />
+         </children></Pane>
+   </children>
+</AnchorPane>
