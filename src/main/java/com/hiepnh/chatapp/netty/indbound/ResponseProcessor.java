@@ -15,7 +15,6 @@ public class ResponseProcessor extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         TlvPackage tlvPackage = (TlvPackage) msg;
         String content = AppUtils.convertByteArrayToString(tlvPackage.getValues());
-        logger.info("Content : {}", content);
     }
 
 }

@@ -7,6 +7,7 @@ import com.hiepnh.chatapp.session.UserSession;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -17,9 +18,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 @Component
-public class LoginController {
+public class LoginController implements Initializable {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -44,7 +48,7 @@ public class LoginController {
             UserSession.getInstance().setUser(user);
             Parent root;
             try {
-                root =  FXMLLoader.load(getClass().getResource("/ui/app.fxml"));
+                root =  FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/ui/app.fxml")));
                 Scene scene = new Scene(root);
                 StageListener.stage.close();
                 StageListener.stage.setScene(scene);
@@ -76,4 +80,8 @@ public class LoginController {
         }
     }
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+
+    }
 }

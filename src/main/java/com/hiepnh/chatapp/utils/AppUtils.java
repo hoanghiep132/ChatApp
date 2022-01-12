@@ -3,13 +3,13 @@ package com.hiepnh.chatapp.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
-import javafx.scene.paint.ImagePattern;
-import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
-import java.awt.image.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.WritableRaster;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -36,7 +36,6 @@ public class AppUtils {
         return data.getData();
     }
 
-
     public static Image convertByteArrayToImage(byte[] data){
         Image image;
         if(data == null){
@@ -58,6 +57,7 @@ public class AppUtils {
             return null;
         }
     }
+
     public static Image convertByteArrayToImage(byte[] data, int width, int height){
         Image image;
         if(data == null || data.length == 1){
@@ -77,6 +77,17 @@ public class AppUtils {
         }catch (Exception ex){
             logger.error("Load image : ", ex);
             return null;
+        }
+    }
+
+    public static byte[] convertImageToByteArray(Image image){
+        try {
+             BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);
+             ByteArrayOutputStream s = new ByteArrayOutputStream();
+             ImageIO.write(bImage, "png", s);
+             return s.toByteArray();
+        }catch (Exception ex){
+            return  null;
         }
     }
 
@@ -196,4 +207,31 @@ public class AppUtils {
         return rs;
     }
 
+    public static String parseString(Object obj) {
+        if (obj == null) {
+            return "";
+        } else {
+            try {
+                return String.valueOf(obj);
+            } catch (Exception var2) {
+                return "";
+            }
+        }
+    }
+
+    public static int parseInt(Object o) {
+        if (o == null) {
+            return 0;
+        } else if (o instanceof Double) {
+            return ((Double) o).intValue();
+        } else if (o instanceof Float) {
+            return ((Float) o).intValue();
+        } else {
+            try {
+                return Integer.parseInt(String.valueOf(o));
+            } catch (Exception var2) {
+                return 0;
+            }
+        }
+    }
 }

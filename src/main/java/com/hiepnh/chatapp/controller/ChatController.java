@@ -12,6 +12,7 @@ import com.hiepnh.chatapp.model.FriendHistory;
 import com.hiepnh.chatapp.model.Message;
 import com.hiepnh.chatapp.netty.NettyClient;
 import com.hiepnh.chatapp.service.ApiService;
+import com.hiepnh.chatapp.session.DataStorage;
 import com.hiepnh.chatapp.session.UserSession;
 import com.hiepnh.chatapp.traynotifications.animations.AnimationType;
 import com.hiepnh.chatapp.traynotifications.notification.TrayNotification;
@@ -28,6 +29,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -102,8 +104,12 @@ public class ChatController implements Initializable {
     @FXML
     private Circle friendCircleImg;
 
+    @FXML
+    private Button videoCallBtn;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        videoCallBtn.setVisible(false);
         initCurrentOnlineUserList();
         initNetty();
         updateMessageTask();
@@ -114,7 +120,7 @@ public class ChatController implements Initializable {
 
     @FXML
     void videoCall(ActionEvent event){
-        if(currentFriend.isBlank()){
+        if(currentFriend == null || currentFriend.isBlank()){
             return;
         }
         Message message = new Message();
@@ -123,28 +129,27 @@ public class ChatController implements Initializable {
         nettyClient.sendMessage(message);
 
         Parent root;
-        try {
-            root =  FXMLLoader.load(getClass().getResource("/ui/videoView.fxml"));
+         try {
+            root =  FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/ui/videoView.fxml")));
             Scene scene = new Scene(root);
-//            StageListener.stage.close();
+            StageListener.stage.close();
             StageListener.stage.setScene(scene);
-            UserSession.getInstance().setUser(null);
             StageListener.stage.show();
         }
         catch (IOException e) {
-            logger.error("log out error: ", e);
+            logger.error("video call error: ", e);
         }
     }
 
     @FXML
     void logout(ActionEvent event) {
         Parent root;
+        UserSession.getInstance().setUser(null);
         try {
-            root =  FXMLLoader.load(getClass().getResource("/ui/login.fxml"));
+            root =  FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/ui/login.fxml")));
             Scene scene = new Scene(root);
             StageListener.stage.close();
             StageListener.stage.setScene(scene);
-            UserSession.getInstance().setUser(null);
             StageListener.stage.show();
         }
         catch (IOException e) {
@@ -201,7 +206,6 @@ public class ChatController implements Initializable {
     private void updateMessageList(int userId, int friendId){
         List<MessageEntity> messageEntities = ApiService.getListMessage(userId, friendId,offset , offset + 15);
         if(messageEntities == null || messageEntities.isEmpty()){
-            logger.info("Conversation empty");
             return;
         }
 //        addListChat(messageEntities);
@@ -216,6 +220,7 @@ public class ChatController implements Initializable {
             message.setTime(messageEntity.getTime());
             message.setContent(messageEntity.getContent());
             addToChat(message, otherImage, yourImage);
+//            addToChat(message);
             offset++;
         }
     }
@@ -225,6 +230,9 @@ public class ChatController implements Initializable {
         if (onlineUserList.getSelectionModel().getSelectedItems().isEmpty()) {
             return;
         }
+        videoCallBtn.setVisible(true);
+        friendCircleImg.setVisible(true);
+        friendNameLabel.setVisible(true);
         FriendHistory friendHistory = onlineUserList.getSelectionModel().getSelectedItems().get(0);
         this.currentFriend = friendHistory.getInteractionUser().getInteraction().getUsername();
         byte[] data;
@@ -242,7 +250,6 @@ public class ChatController implements Initializable {
         offset = 0;
         limit = 0;
         updateMessageList(userId, friendId);
-        logger.info("offset : {}", offset);
     }
 
     private synchronized void initCurrentOnlineUserList() {
@@ -276,6 +283,8 @@ public class ChatController implements Initializable {
         }
         Image img = new Image(is);
         friendCircleImg.setFill(new ImagePattern(img));
+        friendCircleImg.setVisible(false);
+        friendNameLabel.setVisible(false);
     }
 
     private synchronized void addToChat(Message message, Image otherImg, Image yourImg) {
@@ -538,40 +547,65 @@ public class ChatController implements Initializable {
                     Platform.runLater(() -> typingLabel.setText(""));
                 }
                 if (newMsg.getTag() == MessageType.MESSAGE) {
-                    Message newChatMsg = newMsg;
                     if(currentFriend != null && !currentFriend.equals("")){
                         if(StageListener.show){
-                            if (newChatMsg.getSender().equals(currentFriend)) {
-                                Platform.runLater(() -> addToChat(newChatMsg));
+                            if (newMsg.getSender().equals(currentFriend)) {
+                                Platform.runLater(() -> addToChat(newMsg));
                             }
                         }else {
-                            Platform.runLater(() -> addToChat(newChatMsg));
-                            newMsgNotification(newChatMsg);
+                            Platform.runLater(() -> addToChat(newMsg));
+                            newMsgNotification(newMsg);
                         }
                     }
-                    updateLeftBar(newChatMsg, newChatMsg.getSender());
+                    updateLeftBar(newMsg, newMsg.getSender());
                 } else if (newMsg.getTag() == MessageType.ONLINE) {
-                    Message newChatMsg = newMsg;
-                    updateOnlineList(newChatMsg.getContent());
+                    updateOnlineList(newMsg.getContent());
                 }else if(newMsg.getTag() == MessageType.CALL_REQUEST){
-                    Parent root;
-                    try {
-                        root =  FXMLLoader.load(getClass().getResource("/ui/callRequestView.fxml"));
-                        Scene scene = new Scene(root);
+                    Platform.runLater(() -> transferVideoNow(newMsg));
+
+//                    String sender = newMsg.getSender();
+//                    DataStorage.getInstance().setAttribute("call_username", sender);
+//                    logger.info("Call request : {}", sender);
+//                    Parent root;
+//                    try {
+////                        StageListener.stage.close();
+////                        root =  FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/ui/callRequestView.fxml")));
+//                        root =  FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/ui/incomingVideo.fxml")));
+//                        Scene scene = new Scene(root);
 //                        StageListener.stage.close();
-                        StageListener.stage.setScene(scene);
-                        UserSession.getInstance().setUser(null);
-                        StageListener.stage.show();
-                    }
-                    catch (IOException e) {
-                        logger.error("log out error: ", e);
-                    }
+//                        StageListener.stage.setScene(scene);
+//                        StageListener.stage.show();
+//                    }
+//                    catch (Exception e) {
+//                        logger.error("request view error: ", e);
+//                    }
                 }
 
             }
         });
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
         executor.scheduleWithFixedDelay(task, 0, 100, TimeUnit.MILLISECONDS);
+    }
+
+    private void transferVideoNow(Message newMsg){
+        String sender = newMsg.getSender();
+        DataStorage.getInstance().setAttribute("call_username", sender);
+        Message message = new Message();
+        message.setTag(MessageType.CALL_ACCEPT);
+        message.setSender(UserSession.getInstance().getUser().getUsername());
+        nettyClient.sendMessage(message);
+        Parent root;
+        try {
+            Thread.sleep(5000);
+            root =  FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/ui/incomingVideo.fxml")));
+            Scene scene = new Scene(root);
+            StageListener.stage.close();
+            StageListener.stage.setScene(scene);
+            StageListener.stage.show();
+        }
+        catch (Exception e) {
+            logger.error("request view error: ", e);
+        }
     }
 
     public void newMsgNotification(Message msg) {

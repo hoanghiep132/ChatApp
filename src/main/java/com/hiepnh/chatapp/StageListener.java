@@ -1,5 +1,6 @@
 package com.hiepnh.chatapp;
 
+import com.hiepnh.chatapp.session.UserSession;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -40,6 +41,19 @@ public class StageListener implements ApplicationListener<JavaFxApplication.Stag
             secondaryStage = new Stage();
         }
         return secondaryStage;
+    }
+
+    public static void changeScene(String filename){
+        Parent root;
+        try {
+            root =  FXMLLoader.load(StageListener.class.getResource("/ui/" + filename + ".fxml"));
+            Scene scene = new Scene(root);
+            stage.close();
+            stage.setScene(scene);
+            stage.show();
+        }
+        catch (IOException e) {
+        }
     }
 
     @Override

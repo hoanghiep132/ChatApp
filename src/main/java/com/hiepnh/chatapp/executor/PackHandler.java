@@ -16,8 +16,11 @@ public class PackHandler implements Watcher{
 
     public BlockingQueue<Message> messageQueue;
 
+    public BlockingQueue<Message> videoQueue;
+
     public PackHandler() {
         messageQueue = new LinkedBlockingQueue<>();
+        videoQueue = new LinkedBlockingQueue<>();
     }
 
     public void addPackage(TlvPackage tlvPackage){
@@ -41,7 +44,6 @@ public class PackHandler implements Watcher{
             Message message = new Message();
             message.setTag(MessageType.ONLINE);
             message.setContent(value);
-            logger.info("UserOnline : {}", value);
             messageQueue.offer(message);
         }else if(tlvPackage.getTag() == MessageType.TYPING){
             Message message = new Message();
@@ -49,12 +51,15 @@ public class PackHandler implements Watcher{
             message.setContent(value);
             messageQueue.offer(message);
         }else if(tlvPackage.getTag() == MessageType.CALL){
-
+            Message message = new Message();
+            byte[] data= tlvPackage.getValues();
+            message.setTag(MessageType.CALL);
+            message.setVideoData(data);
+            videoQueue.offer(message);
         }else if(tlvPackage.getTag() == MessageType.CALL_REQUEST){
-            logger.info("call request");
             Message message = new Message();
             message.setTag(MessageType.CALL_REQUEST);
-            message.setContent(value);
+            message.setSender(value);
             messageQueue.offer(message);
         }
     }

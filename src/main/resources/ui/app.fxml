@@ -31,7 +31,7 @@
                         <Label fx:id="friendNameLabel" layoutX="118.0" layoutY="14.0" prefHeight="40.0" prefWidth="200.0" text="USER1" />
                         <Circle fx:id="friendCircleImg" fill="DODGERBLUE" layoutX="54.0" layoutY="54.0" radius="40.0" stroke="BLACK" strokeType="INSIDE" />
                         <Label fx:id="typingLabel" layoutX="118.0" layoutY="62.0" prefHeight="16.0" prefWidth="70.0" />
-                        <Button layoutX="652.0" layoutY="28.0" mnemonicParsing="false" onAction="#videoCall" prefHeight="40.0" prefWidth="98.0" text="Video Call" />
+                        <Button fx:id="videoCallBtn" layoutX="652.0" layoutY="28.0" mnemonicParsing="false" onAction="#videoCall" prefHeight="40.0" prefWidth="98.0" text="Video Call" />
                      </children></AnchorPane>
                   <ListView fx:id="messageList" layoutX="6.0" layoutY="100.0" prefHeight="600.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0" />
                </children></AnchorPane>

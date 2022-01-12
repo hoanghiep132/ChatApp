@@ -66,6 +66,15 @@ public class ResponseDecoder extends ChannelInboundHandlerAdapter {
                 case StateDecoder.TAG_FLAG:
                     byte tagByte = tmp.getByte(start++);
                     tlvPackage.setTag(tagByte);
+                    if(tagByte == MessageType.CALL_ACCEPT || tagByte == MessageType.CALL_REJECT){
+                        tlvPackage.setLength(0);
+                        start += StateDecoder.LENGTH;
+                        byteNumber -= StateDecoder.LENGTH;
+                        watcher.addPackage(tlvPackage);
+                        tlvPackage.reset();
+                        flag = StateDecoder.TAG_FLAG;
+                        break;
+                    }
                     byteNumber -= StateDecoder.TAG_LENGTH;
                     flag = StateDecoder.LENGTH_FLAG;
                     break;
@@ -91,9 +100,6 @@ public class ResponseDecoder extends ChannelInboundHandlerAdapter {
                     byte[] values = new byte[valueLength];
                     tmp.getBytes(start, values);
                     tlvPackage.setData(values);
-                    if(tlvPackage.getTag() == MessageType.CALL_REQUEST){
-                        logger.info("aaaaaaaaaaaaaaaaaaa");
-                    }
                     watcher.addPackage(tlvPackage);
                     start += valueLength;
                     byteNumber -= valueLength;
